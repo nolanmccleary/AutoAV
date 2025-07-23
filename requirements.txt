@@ -1,0 +1,33 @@
+# Core dependencies
+openai>=1.0.0
+click>=8.0.0
+pyyaml>=6.0
+rich>=13.0.0
+python-dotenv>=1.0.0
+
+# File and system operations
+psutil>=5.9.0
+pathlib2>=2.3.7
+magic>=0.4.27
+
+# Security and hashing
+cryptography>=41.0.0
+hashlib-compat>=1.0.0
+
+# ClamAV integration
+python-clamd>=0.4.0
+
+# Async support
+asyncio-mqtt>=0.11.0
+aiofiles>=23.0.0
+
+# Logging and monitoring
+structlog>=23.0.0
+colorama>=0.4.6
+
+# Development dependencies (optional)
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0 

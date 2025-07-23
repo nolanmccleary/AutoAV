@@ -1,0 +1,48 @@
+# AutoAV Configuration File
+
+# LLM Settings
+llm:
+  model: gpt-4  # or gpt-3.5-turbo
+  temperature: 0.1
+  max_tokens: 4000
+  timeout: 30
+
+# Security Settings
+security:
+  max_file_size: 10485760  # 10MB in bytes
+  allowed_directories:
+    - /Users
+    - /Applications
+    - /tmp
+  restricted_directories:
+    - /System
+    - /Library
+    - /bin
+    - /sbin
+    - /usr
+  read_only: true  # AutoAV is read-only by design
+
+# ClamAV Settings
+clamav:
+  database_path: /usr/local/share/clamav
+  scan_timeout: 30
+  update_interval: 86400  # 24 hours in seconds
+
+# Permission Settings
+permissions:
+  sudo_timeout: 300  # 5 minutes
+  require_confirmation: true
+  auto_grant_user_dirs: true
+
+# Logging Settings
+logging:
+  level: INFO
+  file: autoav.log
+  max_size: 10485760  # 10MB
+  backup_count: 5
+
+# Investigation Settings
+investigation:
+  max_iterations: 10
+  max_tool_calls_per_iteration: 5
+  completion_threshold: 0.8 
