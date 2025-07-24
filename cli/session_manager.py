@@ -2,7 +2,6 @@
 Minimal Session Manager for AutoAV
 """
 
-import asyncio
 from typing import List, Dict, Any
 from llm.openai_client import OpenAIClient
 
