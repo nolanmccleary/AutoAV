@@ -28,13 +28,14 @@ class ToolRegistry:
             "get_network_connections": self._get_network_connections
         }
     
+
     def get_available_tools(self) -> List[str]:
         """Get list of available tool names"""
         return list(self.tools.keys())
     
+
     def get_tool_definitions(self) -> List[Dict[str, Any]]:
         """Get tool definitions for OpenAI API"""
-        
         return [
             {
                 "type": "function",
@@ -198,32 +199,32 @@ class ToolRegistry:
                 }
             }
         ]
+
     
     async def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Execute a tool with the given arguments"""
-        
         if tool_name not in self.tools:
             return f"Error: Unknown tool '{tool_name}'"
         
-        try:
-            # Execute the tool
-            result = await self.tools[tool_name](**arguments)
-            return result
-        except Exception as e:
-            return f"Error executing {tool_name}: {str(e)}"
+        result = await self.tools[tool_name](**arguments)
+        return result
+
     
     async def _list_processes(self, filter: str = None) -> str:
         """List running processes"""
         return await self.file_inspector.list_processes(filter)
     
+
     async def _read_file(self, path: str, max_size: int = 10485760) -> str:
         """Read file contents"""
         return await self.file_inspector.read_file(path, max_size)
     
+
     async def _scan_file(self, path: str) -> str:
         """Scan file with ClamAV"""
         return await self.file_inspector.scan_file(path)
     
+
     async def _find_files(self, pattern: str, directory: str = None, max_results: int = 50) -> str:
         """Find files matching pattern"""
         return await self.file_inspector.find_files(pattern, directory, max_results)

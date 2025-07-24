@@ -124,7 +124,7 @@ class FileInspector:
         
         else:
             # Binary file - return metadata only
-            file_hash = await self._calculate_file_hash(file_path)
+            file_hash = self._calculate_file_hash(file_path)
             
             return f"""File: {path}
             Type: {mime_type} (binary)
@@ -218,7 +218,7 @@ class FileInspector:
         
         stat = file_path.stat()
         mime_type = magic.from_file(str(file_path), mime=True)
-        file_hash = await self._calculate_file_hash(file_path)
+        file_hash = self._calculate_file_hash(file_path)
         
         # Get additional info
         is_executable = os.access(str(file_path), os.X_OK)
@@ -408,10 +408,9 @@ class FileInspector:
         
         # Use sudo to run clamscan
         clamscan_path = self.clamav_scanner.clamscan_path
-        database_path = self.clamav_scanner.database_path
         
         scan_result = await self.permission_manager.execute_sudo_command(
-            [clamscan_path, f'--database={database_path}', '--no-summary', '--infected', file_path],
+            [clamscan_path, '--no-summary', file_path],
             f"scan file with ClamAV: {file_path}"
         )
         
@@ -468,7 +467,7 @@ class FileInspector:
                     Read with sudo: Yes"""
     
 
-    async def _calculate_file_hash(self, file_path: Path) -> str:
+    def _calculate_file_hash(self, file_path: Path) -> str:
         """Calculate SHA256 hash of a file"""
         
         hash_sha256 = hashlib.sha256()
