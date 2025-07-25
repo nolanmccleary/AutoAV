@@ -8,14 +8,12 @@ MAX_TOKENS = 1000
 
 
 class SessionManager:
-    """Minimal session manager"""
     
     def __init__(self, openai_client: OpenAIClient):
         self.openai_client = openai_client
 
     
     def investigate(self, problem_description: str, investigation_cycles: int = 50, max_tokens: int = MAX_TOKENS) -> str:
-        """Main investigation method"""
         
         conversation_history = []
 
@@ -29,7 +27,6 @@ class SessionManager:
 
         for i in range(investigation_cycles):
 
-            # Get LLM response
             choice, usage = self.openai_client.get_response(
                 messages=conversation_history
             )
@@ -44,7 +41,6 @@ class SessionManager:
                 for tool_call in message["tool_calls"]:
                     import json
                     
-                    # Preprocess arguments if they're a JSON string
                     if isinstance(tool_call["function"]["arguments"], str):
                         tool_call["function"]["arguments"] = json.loads(tool_call["function"]["arguments"])
                     

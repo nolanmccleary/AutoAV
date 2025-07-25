@@ -1,8 +1,3 @@
-#!/usr/bin/env python3
-"""
-AutoAV - Lightweight Agentic Antivirus Suite
-"""
-
 import argparse
 import os
 from cli.session_manager import SessionManager
@@ -11,7 +6,7 @@ from tools.tool_registry import ToolRegistry
 
 
 def main(args):
-    """Main entry point"""
+    
     # Check for OpenAI API key, you will need to set this up in your shell config if you have not already done so
     api_key = os.getenv('OPENAI_API_KEY')  
     if not api_key:

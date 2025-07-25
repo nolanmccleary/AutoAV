@@ -1,12 +1,8 @@
-"""
-Minimal OpenAI Client for AutoAV
-"""
-
 from typing import List, Dict, Any, Tuple
 from openai import OpenAI
-from tools.tool_registry import ToolRegistry
+from tools import ToolRegistry
 
-from api.av_api import AVAILABLE_COMMANDS
+from api import AVAILABLE_COMMANDS
 
 
 

@@ -52,7 +52,6 @@ __all__ = [
 
 
 def _execute_sudo_command(command: List[str], password: str) -> Tuple[str, int]:
-    """Execute a command with sudo"""
     sudo_command = ['sudo', '-S'] + command
     result = subprocess.run(sudo_command, input=password.encode(), capture_output=True, text=True)
     if result.returncode != 0:
@@ -63,7 +62,6 @@ def _execute_sudo_command(command: List[str], password: str) -> Tuple[str, int]:
 
 
 def _execute_command(command: List[str]) -> Tuple[str, int]:
-    """Execute a command"""
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:
         raise f"Error: {result.stderr}"
@@ -81,14 +79,12 @@ def _execute_command(command: List[str]) -> Tuple[str, int]:
 
 
 def api_get_user_input(prompt: str) -> str:
-    """Get user input"""
     return input(prompt)
 
 
 
 
 def api_execute_command(command: str, command_args: List[str] = None) -> dict:
-    """Execute a command"""
     if command not in AVAILABLE_COMMANDS:
         raise f"Error: Command '{command}' is not available"
     

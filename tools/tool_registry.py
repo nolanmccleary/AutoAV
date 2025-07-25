@@ -1,15 +1,9 @@
-"""
-Tool Registry for AutoAV
-Defines and manages available filesystem operations for the LLM
-"""
-
 from typing import List, Dict, Any, Callable
 
 from api import api_execute_command
 
 
 class ToolRegistry:
-    """Registry of available tools for the LLM"""
     
     def __init__(self):
         self.tools: Dict[str, Callable] = {
@@ -18,13 +12,11 @@ class ToolRegistry:
     
 
     def get_available_tools(self) -> List[str]:
-        """Get list of available tool names"""
         return list(self.tools.keys())
     
 
     #TODO: Better tool defs
     def get_tool_definitions(self) -> List[Dict[str, Any]]:
-        """Get tool definitions for OpenAI API"""
         return [
             {
                 "type": "function",
@@ -69,7 +61,6 @@ class ToolRegistry:
 
     
     def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> str:
-        """Execute a tool with the given arguments"""
         if tool_name not in self.tools:
             raise ValueError(f"Error: Unknown tool '{tool_name}'")
         return self.tools[tool_name](**arguments)
