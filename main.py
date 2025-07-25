@@ -7,7 +7,6 @@ import os
 import asyncio
 from cli.session_manager import SessionManager
 from llm.openai_client import OpenAIClient
-from inspector.file_inspector import FileInspector
 from tools.tool_registry import ToolRegistry
 
 

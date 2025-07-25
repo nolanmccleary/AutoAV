@@ -7,108 +7,86 @@ import subprocess
 import psutil
 import magic
 
-from clamav.scanner import ClamAVScanner
 
-
-
-SCANNER = ClamAVScanner()
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 RESTRICTED_DIRS = ['/System', '/Library', '/bin', '/sbin', '/usr']
-
+AVAILABLE_COMMANDS = [
+    'cd', 'ls', 'cat', 'stat', 'ps', 'netstat', 'ifconfig', 'route', 'dig', 'ping', 'traceroute',
+    'whoami', 'who', 'last', 'w', 'free', 'df', 'clamscan', 'grep'
+]
 
 
 
 __all__ = [
-    "api_scan_file",
     "api_read_file",
     "api_list_network_connections",
     "api_list_processes",
     "api_get_file_info",
     "api_find_files",
     "api_list_directory_contents",
+    "api_execute_command"
 ]
 
 
 
-
-def execute_sudo_command(command: List[str], password: str) -> Tuple[str, int]:
+def _execute_sudo_command(command: List[str], password: str) -> Tuple[str, int]:
     """Execute a command with sudo"""
-    ret = ''
     sudo_command = ['sudo', '-S'] + command
     result = subprocess.run(sudo_command, input=password.encode(), capture_output=True, text=True)
-    if result.returncode == 0:
-        ret = result.stdout
-    else:
-        ret = f"Error: {result.stderr}"
+    if result.returncode != 0:
+        raise f"Error: {result.stderr}"
    
-    return ret, result.returncode
+    return result.stdout, result.returncode
 
 
 
-
-def execute_command(command: List[str]) -> Tuple[str, int]:
+def _execute_command(command: List[str]) -> Tuple[str, int]:
     """Execute a command"""
-    ret = ''
     result = subprocess.run(command, capture_output=True, text=True)
-    if result.returncode == 0:
-        ret = result.stdout.decode('utf-8', errors='ignore')
-    else:
-        ret = f"Error: {result.stderr}"
-    return ret, result.returncode
+    if result.returncode != 0:
+        raise f"Error: {result.stderr}"
+    return result.stdout, result.returncode
 
 
 
+def _can_read_file(file_path: str) -> bool:
+    """Check if we can read a file"""
+    path = Path(file_path).resolve()
+    return os.access(str(path), os.R_OK)
 
-def _scan_file_with_sudo(file_path: str) -> dict:
-    """Scan a file with ClamAV using sudo if needed"""
-    
-    if not SCANNER.is_available():
-        raise f"Error: ClamAV not available for sudo scanning"
-    else:
-        clamscan_path = SCANNER.clamscan_path
-        scan_result, returncode = execute_sudo_command(
-            command=[clamscan_path, '--no-summary', file_path],
-            password=input(f"Sudo permissions required for scanning file: {file_path} - Please enter your password: ")
-        )
 
-        if returncode != 0:
-            raise f"Error scanning file with sudo: {scan_result}"
-        else:
-            return {
-                "file_path" : file_path,
-                "clamav_scan_result" : scan_result
-            }
-    
-    
 
-def api_scan_file(path: str) -> dict:
-    """Scan file with ClamAV"""
-    
-    file_path = Path(path).resolve()
-    if not file_path.exists():
-        raise f"Error: File '{path}' does not exist"
-    
-    elif not file_path.is_file():
-        raise f"Error: '{path}' is not a file"
-    
-    elif not _can_read_file(str(file_path)):
-        if _is_restricted_path(str(file_path)):
-            return _scan_file_with_sudo(str(file_path))
-        else:
-            raise f"Error: Permission denied scanning '{path}'"
-    
-    else: 
-        return {
-            "file_path" : path,
-            "clamav_scan_result" : SCANNER.scan_file(str(file_path))
-        }
-    
+def _can_read_directory(dir_path: str) -> bool:
+    """Check if we can read a directory"""
+    path = Path(dir_path).resolve()
+    return os.access(str(path), os.R_OK)
 
+
+
+def _is_restricted_path(path: str) -> bool:
+    """Check if a path is in a restricted directory"""
+    path_parts = Path(path).parts
+    for restricted_dir in RESTRICTED_DIRS:
+        if restricted_dir in path_parts:
+            return True
+    return False
+
+
+
+def _calculate_file_hash(file_path: Path) -> str:
+    """Calculate SHA256 hash of a file"""
+    hash_sha256 = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_sha256.update(chunk)
+    return hash_sha256.hexdigest() 
+    
+    
 
 def _read_file_with_sudo(file_path: str, max_size: int) -> dict:
     """Read a file using sudo if needed"""
     
-    size_result, returncode = execute_sudo_command(
+    size_result, returncode = _execute_sudo_command(
         command=['stat', '-f', '%z', file_path],
         password=input(f"Sudo permissions required for reading file: {file_path} - Please enter your password: ")
     )
@@ -121,7 +99,7 @@ def _read_file_with_sudo(file_path: str, max_size: int) -> dict:
     if file_size > max_size:
         raise f"Error: File size ({file_size} bytes) exceeds maximum allowed size ({max_size} bytes)"
     
-    content_result, returncode = execute_sudo_command(
+    content_result, returncode = _execute_sudo_command(
         command = ['cat', file_path],
         password=input(f"Sudo permissions required for catting file: {file_path} - Please enter your password: ")
     )
@@ -138,6 +116,48 @@ def _read_file_with_sudo(file_path: str, max_size: int) -> dict:
     }
 
 
+
+def _get_stats(path: str) -> dict:
+    """Get stats for a file or directory"""
+    path = Path(path).resolve()
+    stat = path.stat()
+    return {
+        "path": path,
+        "size_in_bytes": stat.st_size,
+        "type": "file" if path.is_file() else "directory" if path.is_dir() else "N/A",
+        "mime_type": magic.from_file(str(path), mime=True),
+        "created": datetime.fromtimestamp(stat.st_ctime).isoformat(),
+        "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+        "accessed": datetime.fromtimestamp(stat.st_atime).isoformat(),
+        "owner": stat.st_uid,
+        "group": stat.st_gid,
+    }
+
+
+
+
+########################################################
+# API Functions
+########################################################
+
+
+def api_execute_command(command: str, command_args: List[str] = None) -> dict:
+    """Execute a command"""
+    if command not in AVAILABLE_COMMANDS:
+        raise f"Error: Command '{command}' is not available"
+    
+    if command_args is None:
+        command_args = []
+    
+    result, returncode = _execute_command([command] + command_args)
+    
+    return {
+        "command": command,
+        "args": command_args,
+        "output": result,
+        "return_code": returncode
+    }
+    
 
 
 def api_read_file(file_path: str, max_size: int = None) -> dict:
@@ -165,7 +185,6 @@ def api_read_file(file_path: str, max_size: int = None) -> dict:
     
     else:
         return stats
-
 
 
 
@@ -324,48 +343,3 @@ def api_list_directory_contents(directory_path: str, show_hidden: bool = False) 
 
 
 
-def _get_stats(path: str) -> dict:
-    """Get stats for a file or directory"""
-    path = Path(path).resolve()
-    stat = path.stat()
-    return {
-        "path": path,
-        "size_in_bytes": stat.st_size,
-        "type": "file" if path.is_file() else "directory" if path.is_dir() else "N/A",
-        "mime_type": magic.from_file(str(path), mime=True),
-        "created": datetime.fromtimestamp(stat.st_ctime).isoformat(),
-        "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-        "accessed": datetime.fromtimestamp(stat.st_atime).isoformat(),
-        "owner": stat.st_uid,
-        "group": stat.st_gid,
-    }
-
-
-def _can_read_file(file_path: str) -> bool:
-    """Check if we can read a file"""
-    path = Path(file_path).resolve()
-    return os.access(str(path), os.R_OK)
-
-
-def _can_read_directory(dir_path: str) -> bool:
-    """Check if we can read a directory"""
-    path = Path(dir_path).resolve()
-    return os.access(str(path), os.R_OK)
-
-
-def _is_restricted_path(path: str) -> bool:
-    """Check if a path is in a restricted directory"""
-    path_parts = Path(path).parts
-    for restricted_dir in RESTRICTED_DIRS:
-        if restricted_dir in path_parts:
-            return True
-    return False
-
-
-def _calculate_file_hash(file_path: Path) -> str:
-    """Calculate SHA256 hash of a file"""
-    hash_sha256 = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_sha256.update(chunk)
-    return hash_sha256.hexdigest() 

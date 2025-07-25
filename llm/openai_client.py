@@ -5,7 +5,6 @@ Minimal OpenAI Client for AutoAV
 import json
 from typing import List, Dict, Any
 from dataclasses import dataclass
-import openai
 from openai import AsyncOpenAI
 from tools.tool_registry import ToolRegistry
 
@@ -14,7 +13,7 @@ from tools.tool_registry import ToolRegistry
 class ToolCall:
     """Represents a tool call from the LLM"""
     id: str
-    function: Dict[str, Any]
+    name: str
     arguments: Dict[str, Any]
 
 
