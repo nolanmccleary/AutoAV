@@ -1,4 +1,4 @@
-from llm.openai_client import OpenAIClient
+from llm import OpenAIClient
 
 
 
@@ -17,7 +17,6 @@ class SessionManager:
         
         conversation_history = []
 
-        # Add user message to history
         conversation_history.append({
             "role": "user",
             "content": problem_description

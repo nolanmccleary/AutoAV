@@ -1,8 +1,6 @@
 from typing import List, Dict, Any, Tuple
 from openai import OpenAI
-from tools import ToolRegistry
-
-from api import AVAILABLE_COMMANDS
+from tools import ToolRegistry, AVAILABLE_COMMANDS
 
 
 

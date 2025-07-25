@@ -1,8 +1,8 @@
 import argparse
 import os
-from cli.session_manager import SessionManager
-from llm.openai_client import OpenAIClient
-from tools.tool_registry import ToolRegistry
+from cli import SessionManager
+from llm import OpenAIClient
+from tools import ToolRegistry
 
 
 def main(args):
