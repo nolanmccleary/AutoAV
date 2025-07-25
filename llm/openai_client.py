@@ -6,9 +6,7 @@ from tools import ToolRegistry, AVAILABLE_COMMANDS
 
 #TODO: Better system prompt
 SYSTEM_PROMPT = {"role": "system", "content": 
-"You are a security investigator with access to a UNIX shell. You can use the following tools to investigate security problems: " + 
-", ".join(AVAILABLE_COMMANDS) + " " +
-"If you are not sure what to do next, you can use the 'api_get_user_input' tool to get user input."}
+f"You are a security investigator with access to a UNIX shell. You can use the following tools to investigate security problems: {', '.join(AVAILABLE_COMMANDS)} If you are not sure what to do next, you can use the 'api_get_user_input' tool to get user input on what to do next."}
 
 
 
