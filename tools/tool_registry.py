@@ -87,7 +87,7 @@ class ToolRegistry:
                                 "description": "Maximum file size to read in bytes (default: 10485760 = 10MB)"
                             }
                         },
-                        "required": ["path"]
+                        "required": ["file_path"]
                     }
                 }
             },
@@ -177,7 +177,7 @@ class ToolRegistry:
     def execute_tool(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Execute a tool with the given arguments"""
         if tool_name not in self.tools:
-            raise f"Error: Unknown tool '{tool_name}'"
+            raise ValueError(f"Error: Unknown tool '{tool_name}'")
         return self.tools[tool_name](**arguments)
 
 

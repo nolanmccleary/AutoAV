@@ -47,6 +47,12 @@ class SessionManager:
 
             if finish_reason == "tool_calls":
                 for tool_call in message["tool_calls"]:
+                    import json
+                    
+                    # Preprocess arguments if they're a JSON string
+                    if isinstance(tool_call["function"]["arguments"], str):
+                        tool_call["function"]["arguments"] = json.loads(tool_call["function"]["arguments"])
+                    
                     conversation_history.append(self.openai_client.execute_tool_call(tool_call))
 
             if tokens_expended >= max_tokens or finish_reason == "stop":

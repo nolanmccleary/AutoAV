@@ -28,7 +28,7 @@ class OpenAIClient:
         return self.system_prompt
 
 
-    def get_response(self, messages: List[Dict[str, Any]]) -> Tuple(Dict):
+    def get_response(self, messages: List[Dict[str, Any]]) -> Tuple[Dict, Dict]:
         """Get a response from the LLM"""
         # Add system message
         client_messages = [self.system_prompt] + messages
@@ -48,7 +48,7 @@ class OpenAIClient:
         return choice, usage
 
 
-    def execute_tool_call(self, tool_call: Dict) -> str:
+    def execute_tool_call(self, tool_call: Dict) -> Dict:
         """Execute a tool call"""
         content = self.tool_registry.execute_tool(
             tool_call["function"]["name"],
