@@ -5,7 +5,6 @@ Minimal OpenAI Client for AutoAV
 from typing import List, Dict, Any, Tuple
 from openai import OpenAI
 from tools.tool_registry import ToolRegistry
-import inspect
 
 from api.av_api import AVAILABLE_COMMANDS
 
@@ -14,13 +13,12 @@ from api.av_api import AVAILABLE_COMMANDS
 #TODO: Better system prompt
 SYSTEM_PROMPT = {"role": "system", "content": 
 "You are a security investigator with access to a UNIX shell. You can use the following tools to investigate security problems: " + 
-", ".join(AVAILABLE_COMMANDS) +
+", ".join(AVAILABLE_COMMANDS) + " " +
 "If you are not sure what to do next, you can use the 'api_get_user_input' tool to get user input."}
 
 
 
 class OpenAIClient:
-    """Minimal OpenAI client"""
     
     def __init__(self, api_key: str, tool_registry: ToolRegistry, system_prompt = SYSTEM_PROMPT):
         self.client = OpenAI(api_key=api_key)
@@ -35,9 +33,7 @@ class OpenAIClient:
 
     def get_response(self, messages: List[Dict[str, Any]]) -> Tuple[Dict, Dict]:
         """Get a response from the LLM"""
-        # Add system message
         client_messages = [self.system_prompt] + messages
-        
         
         response = self.client.chat.completions.create(
             model="gpt-4",
