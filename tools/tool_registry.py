@@ -29,6 +29,7 @@ class ToolRegistry:
         return list(self.tools.keys())
     
 
+    #TODO: Better tool defs
     def get_tool_definitions(self) -> List[Dict[str, Any]]:
         """Get tool definitions for OpenAI API"""
         return [
@@ -36,7 +37,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_execute_command",
-                    "description": f"Execute a shell-based command. Function source code: {inspect.getsource(api_execute_command)}",
+                    "description": f"Execute a shell-based command.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -57,7 +58,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_list_processes",
-                    "description": f"List running processes with details including command line, memory usage, and file paths. Function source code: {inspect.getsource(api_list_processes)}",
+                    "description": f"List running processes with details including command line, memory usage, and file paths.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -73,7 +74,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_read_file",
-                    "description": f"Read file contents safely with size limits and validation. Function source code: {inspect.getsource(api_read_file)}. Helper function: {inspect.getsource(_get_stats)}",
+                    "description": f"Read file contents safely with size limits and validation.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -94,7 +95,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_find_files",
-                    "description": f"Find files matching pattern criteria using glob patterns. Function source code: {inspect.getsource(api_find_files)}. Helper function: {inspect.getsource(_get_stats)}",
+                    "description": f"Find files matching pattern criteria using glob patterns.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -119,7 +120,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_get_file_info",
-                    "description": f"Get detailed file information including permissions, timestamps, and metadata. Function source code: {inspect.getsource(api_get_file_info)}. Helper function: {inspect.getsource(_get_stats)}",
+                    "description": f"Get detailed file information including permissions, timestamps, and metadata.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -136,7 +137,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_list_directory_contents",
-                    "description": f"Nonrecursively list contents of a directory with file details. Function source code: {inspect.getsource(api_list_directory_contents)}. Helper function: {inspect.getsource(_get_stats)}",
+                    "description": f"Nonrecursively list contents of a directory with file details.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -157,7 +158,7 @@ class ToolRegistry:
                 "type": "function",
                 "function": {
                     "name": "api_list_network_connections",
-                    "description": f"Get active network connections and associated processes. Function source code: {inspect.getsource(api_list_network_connections)}",
+                    "description": f"Get active network connections and associated processes.",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -178,3 +179,7 @@ class ToolRegistry:
         if tool_name not in self.tools:
             raise f"Error: Unknown tool '{tool_name}'"
         return self.tools[tool_name](**arguments)
+
+
+
+    

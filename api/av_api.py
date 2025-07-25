@@ -12,7 +12,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 RESTRICTED_DIRS = ['/System', '/Library', '/bin', '/sbin', '/usr']
 AVAILABLE_COMMANDS = [
     'cd', 'ls', 'cat', 'stat', 'ps', 'netstat', 'ifconfig', 'route', 'dig', 'ping', 'traceroute',
-    'whoami', 'who', 'last', 'w', 'free', 'df', 'clamscan', 'grep'
+    'whoami', 'who', 'last', 'w', 'free', 'df', 'clamscan', 'clamdscan', 'freshclam', 'grep'
 ]
 
 
@@ -340,6 +340,3 @@ def api_list_directory_contents(directory_path: str, show_hidden: bool = False) 
         "dir_path": directory_path,
         "contents": items
     }
-
-
-
