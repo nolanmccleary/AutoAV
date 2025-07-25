@@ -3,14 +3,19 @@ Minimal OpenAI Client for AutoAV
 """
 
 from typing import List, Dict, Any, Tuple
-from dataclasses import dataclass
 from openai import OpenAI
 from tools.tool_registry import ToolRegistry
+import inspect
+
+from api.av_api import AVAILABLE_COMMANDS
 
 
 
 #TODO: Better system prompt
-SYSTEM_PROMPT = {"role": "system", "content": "You are a security investigator. Use available tools to investigate security problems."}
+SYSTEM_PROMPT = {"role": "system", "content": 
+"You are a security investigator with access to a UNIX shell. You can use the following tools to investigate security problems: " + 
+", ".join(AVAILABLE_COMMANDS) +
+"If you are not sure what to do next, you can use the 'api_get_user_input' tool to get user input."}
 
 
 

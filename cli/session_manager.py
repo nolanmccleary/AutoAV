@@ -1,8 +1,3 @@
-"""
-Minimal Session Manager for AutoAV
-"""
-
-from typing import List, Dict, Any
 from llm.openai_client import OpenAIClient
 
 

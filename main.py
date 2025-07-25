@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-AutoAV - Minimal AI-Driven Antivirus Suite
+AutoAV - Lightweight Agentic Antivirus Suite
 """
 
 import os
-import asyncio
 from cli.session_manager import SessionManager
 from llm.openai_client import OpenAIClient
 from tools.tool_registry import ToolRegistry
@@ -25,20 +24,10 @@ def main():
     session_manager = SessionManager(openai_client)
     
 
-    print("AutoAV - Describe your security problem")
-    print("Type 'quit' to exit\n")
-    
-    while True:
-        problem = input("Problem: ").strip()
-        if problem.lower() in ['quit', 'exit', 'q']:
-            break
-        
-        if not problem:
-            continue
-        
-        print("Investigating...")
-        result = asyncio.run(session_manager.investigate(problem))
-        print(f"\nResult:\n{result}\n")
+    problem = input("Please describe problem: ").strip()
+    print("Investigating...")
+    result = session_manager.investigate(problem)
+    print(f"\nResult:\n{result}\n")
 
 
 if __name__ == '__main__':
